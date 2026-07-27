@@ -1,0 +1,47 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+**/doc/api/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Melos
+pubspec_overrides.yaml
+.melos/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Coverage / misc
+coverage/
+*.log
+*.jks
+*.keystore
+node_modules/
+
+# Generated
+**/*.g.dart
+**/*.freezed.dart
+!packages/**/lib/**/*.dart
+
+# Local Hive/offline cache artifacts
+*.hive
+tq_*.lock

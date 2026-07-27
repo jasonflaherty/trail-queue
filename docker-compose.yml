@@ -1,0 +1,13 @@
+# Local development helpers for Trail Queue.
+# Prefer `supabase start` for the full stack. This compose file
+# documents optional satellite services.
+
+services:
+  # Optional local tile cache / proxy (not required for MVP demo mode)
+  tile-cache:
+    image: nginx:alpine
+    profiles: ["tiles"]
+    ports:
+      - "8088:80"
+    volumes:
+      - ./infra/docker/nginx-tiles.conf:/etc/nginx/conf.d/default.conf:ro

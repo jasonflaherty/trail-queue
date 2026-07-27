@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Bootstrap packages
+        run: |
+          dart pub get
+          cd apps/client && flutter pub get
+          cd ../../packages/models && dart pub get
+          cd ../ui && flutter pub get
+          cd ../api && flutter pub get
+          cd ../map && flutter pub get
+      - name: Analyze
+        run: |
+          cd apps/client && flutter analyze
+          cd ../../packages/models && dart analyze
+          cd ../ui && flutter analyze
+          cd ../api && flutter analyze
+          cd ../map && flutter analyze
+      - name: Test client
+        run: cd apps/client && flutter test
+
+  supabase-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check backend assets exist
+        run: |
+          test -f firestore.rules
+          test -f docs/firebase.md
+          test -f packages/api/lib/src/firebase_config.dart
+          test -d supabase/migrations || true

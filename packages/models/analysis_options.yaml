@@ -1,0 +1,9 @@
+# Analyzer defaults for models package
+analyzer:
+  errors:
+    unused_import: warning
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true

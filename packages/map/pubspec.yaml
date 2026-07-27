@@ -1,0 +1,27 @@
+name: trail_queue_map
+description: Map widgets and tile providers for Trail Queue
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  trail_queue_models:
+    path: ../models
+  trail_queue_ui:
+    path: ../ui
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
