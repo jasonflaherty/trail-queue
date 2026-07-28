@@ -72,6 +72,22 @@ final basemapProvider = StateProvider<BasemapType>((ref) => BasemapType.osm);
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
+/// Which platform design kit to render. On the web (Chrome) users can pick
+/// either; `auto` follows the running platform.
+enum DesignKit {
+  auto,
+  material3,
+  ios26;
+
+  TargetPlatform? get platformOverride => switch (this) {
+        DesignKit.auto => null,
+        DesignKit.material3 => TargetPlatform.android,
+        DesignKit.ios26 => TargetPlatform.iOS,
+      };
+}
+
+final designKitProvider = StateProvider<DesignKit>((ref) => DesignKit.auto);
+
 final polygonPointsProvider = StateProvider<List<GeoPoint>>((ref) => const []);
 
 final isOnlineProvider = StreamProvider<bool>((ref) async* {

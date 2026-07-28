@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,7 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(authUserProvider).valueOrNull;
     final orgsAsync = ref.watch(organizationsProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final designKit = ref.watch(designKitProvider);
 
     if (user == null) {
       return const Scaffold(
@@ -162,15 +164,83 @@ class ProfileScreen extends ConsumerWidget {
                 .toList(),
           ),
           const SizedBox(height: 20),
+          const SectionHeader(title: 'Appearance'),
+          const SizedBox(height: 8),
           Card(
-            child: SwitchListTile(
-              title: const Text('Dark mode'),
-              subtitle: Text(_themeModeLabel(themeMode)),
-              value: themeMode == ThemeMode.dark,
-              onChanged: (enabled) {
-                ref.read(themeModeProvider.notifier).state =
-                    enabled ? ThemeMode.dark : ThemeMode.light;
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Theme', style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  SegmentedButton<ThemeMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text('Light'),
+                        icon: Icon(Icons.light_mode_outlined),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text('Dark'),
+                        icon: Icon(Icons.dark_mode_outlined),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text('Auto'),
+                        icon: Icon(Icons.brightness_auto_outlined),
+                      ),
+                    ],
+                    selected: {themeMode},
+                    onSelectionChanged: (selection) {
+                      ref.read(themeModeProvider.notifier).state =
+                          selection.first;
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      _themeModeLabel(themeMode),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  if (kIsWeb) ...[
+                    const SizedBox(height: 16),
+                    Text('Design style',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    SegmentedButton<DesignKit>(
+                      segments: const [
+                        ButtonSegment(
+                          value: DesignKit.material3,
+                          label: Text('Material'),
+                          icon: Icon(Icons.android),
+                        ),
+                        ButtonSegment(
+                          value: DesignKit.ios26,
+                          label: Text('iOS'),
+                          icon: Icon(Icons.apple),
+                        ),
+                      ],
+                      selected: {_effectiveKit(designKit)},
+                      onSelectionChanged: (selection) {
+                        ref.read(designKitProvider.notifier).state =
+                            selection.first;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        _effectiveKit(designKit) == DesignKit.ios26
+                            ? 'iOS 26 look: capsule buttons and glass surfaces'
+                            : 'Material 3 look: Android design components',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
           if (user.roles.contains(UserRole.crewLeader) ||
@@ -208,6 +278,16 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// The kit actually rendered: explicit choice, or the platform default
+  /// (Chrome on macOS auto-selects the iOS look, elsewhere Material 3).
+  DesignKit _effectiveKit(DesignKit kit) {
+    if (kit != DesignKit.auto) return kit;
+    final platform = defaultTargetPlatform;
+    return platform == TargetPlatform.iOS || platform == TargetPlatform.macOS
+        ? DesignKit.ios26
+        : DesignKit.material3;
   }
 
   String _themeModeLabel(ThemeMode mode) => switch (mode) {

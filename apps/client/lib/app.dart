@@ -12,11 +12,14 @@ class TrailQueueApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final platform = ref.watch(designKitProvider).platformOverride;
 
     return MaterialApp.router(
       title: 'Trail Queue',
-      theme: TrailQueueTheme.light,
-      darkTheme: TrailQueueTheme.dark,
+      theme:
+          TrailQueueTheme.build(brightness: Brightness.light, platform: platform),
+      darkTheme:
+          TrailQueueTheme.build(brightness: Brightness.dark, platform: platform),
       themeMode: themeMode,
       routerConfig: router,
     );
