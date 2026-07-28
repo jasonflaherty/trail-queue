@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trail_queue_ui/trail_queue_ui.dart';
 
 import '../providers.dart';
+import '../widgets/app_overflow_menu.dart';
 
 class QueueScreen extends ConsumerWidget {
   const QueueScreen({super.key});
@@ -13,7 +14,10 @@ class QueueScreen extends ConsumerWidget {
     final queueAsync = ref.watch(myQueueProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Queue')),
+      appBar: AppBar(
+        title: const Text('My Queue'),
+        actions: const [AppOverflowMenu()],
+      ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(myQueueProvider),
         child: queueAsync.when(

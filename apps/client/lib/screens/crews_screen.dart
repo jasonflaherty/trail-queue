@@ -5,6 +5,7 @@ import 'package:trail_queue_models/trail_queue_models.dart';
 import 'package:trail_queue_ui/trail_queue_ui.dart';
 
 import '../providers.dart';
+import '../widgets/app_overflow_menu.dart';
 
 class CrewsScreen extends ConsumerStatefulWidget {
   const CrewsScreen({super.key});
@@ -117,6 +118,7 @@ class _CrewsScreenState extends ConsumerState<CrewsScreen> {
             icon: const Icon(Icons.add),
             tooltip: 'Create crew',
           ),
+          const AppOverflowMenu(),
         ],
       ),
       body: crewsAsync.when(

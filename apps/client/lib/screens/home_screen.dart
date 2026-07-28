@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trail_queue_ui/trail_queue_ui.dart';
 
 import '../providers.dart';
+import '../widgets/app_overflow_menu.dart';
 import '../widgets/greeting.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -60,6 +61,7 @@ class HomeScreen extends ConsumerWidget {
                           child: const Icon(Icons.notifications_outlined),
                         ),
                       ),
+                      const AppOverflowMenu(),
                     ],
                   ),
                 ),
