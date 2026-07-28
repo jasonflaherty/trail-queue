@@ -21,6 +21,7 @@ import 'screens/organizations_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/queue_screen.dart';
 import 'screens/report_issue_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/shell_screen.dart';
 import 'screens/trail_detail_screen.dart';
 
@@ -176,6 +177,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/offline',
         builder: (context, state) => const OfflineScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: '/organizations',
