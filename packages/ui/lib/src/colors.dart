@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 
 /// Semantic design tokens (DESIGN.md §3, mirrored in packages/ui/tokens.json).
@@ -148,6 +150,56 @@ abstract final class TqRadius {
 
   /// Badges & chips are full pills.
   static const double badge = 100;
+}
+
+/// Platform shape kit: Material 3 geometry on Android/web, iOS 26
+/// continuous ("squircle") corners on Apple platforms.
+class TqShapes extends ThemeExtension<TqShapes> {
+  const TqShapes({
+    required this.card,
+    required this.input,
+    required this.squircle,
+  });
+
+  final double card;
+  final double input;
+
+  /// Apple platforms use continuous superellipse corners.
+  final bool squircle;
+
+  /// Material 3 kit (Android, web, desktop).
+  static const material3 = TqShapes(card: 12, input: 8, squircle: false);
+
+  /// iOS 26 kit (iOS, macOS).
+  static const ios26 = TqShapes(card: 22, input: 14, squircle: true);
+
+  static TqShapes of(BuildContext context) =>
+      Theme.of(context).extension<TqShapes>() ?? material3;
+
+  ShapeBorder get cardShape => squircle
+      // Continuous rectangles need ~1.8x the radius to read the same.
+      ? ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(card * 1.8))
+      : RoundedRectangleBorder(borderRadius: BorderRadius.circular(card));
+
+  @override
+  TqShapes copyWith({double? card, double? input, bool? squircle}) {
+    return TqShapes(
+      card: card ?? this.card,
+      input: input ?? this.input,
+      squircle: squircle ?? this.squircle,
+    );
+  }
+
+  @override
+  TqShapes lerp(TqShapes? other, double t) {
+    if (other == null) return this;
+    return TqShapes(
+      card: lerpDouble(card, other.card, t) ?? card,
+      input: lerpDouble(input, other.input, t) ?? input,
+      squircle: t < 0.5 ? squircle : other.squircle,
+    );
+  }
 }
 
 abstract final class TqSpacing {

@@ -20,7 +20,13 @@ class ShellScreen extends ConsumerWidget {
     );
     final pending = pendingAsync.maybeWhen(data: (v) => v, orElse: () => 0);
 
+    final platform = Theme.of(context).platform;
+    final isApple =
+        platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
+
     return Scaffold(
+      // iOS 26: content scrolls beneath the frosted glass tab bar.
+      extendBody: isApple,
       body: Column(
         children: [
           if (!online || pending > 0)

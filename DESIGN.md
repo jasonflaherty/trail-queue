@@ -135,3 +135,22 @@ design system lives in `packages/ui`:
 | `cards/IssueCard.tsx` | `packages/ui/lib/src/widgets/issue_card.dart` |
 | `inputs/ToggleTileGrid.tsx` | `packages/ui/lib/src/widgets/issue_type_grid.dart` (`IssueTypeGrid`) |
 | `inputs/LocationPicker.tsx` | "Use My Location" flow in `apps/client/lib/screens/report_issue_screen.dart` |
+
+---
+
+## 7. Platform Kits
+
+The theme is platform-adaptive (`TrailQueueTheme.build` in `packages/ui/lib/src/theme.dart`),
+using the same semantic color tokens on both kits:
+
+| | Android / Web / Desktop | iOS / macOS |
+| :--- | :--- | :--- |
+| Kit | Material Design 3 | iOS 26 |
+| Type | Inter | SF system fonts |
+| Buttons | M3 filled/outlined (pill) | Capsules, no ink splash |
+| Cards | 12px rounded rectangles | 22px continuous ("squircle") corners |
+| Tab bar | Opaque M3 `NavigationBar` | Frosted glass (`TqGlassSurface`), content scrolls beneath |
+| Transitions | M3 defaults | Cupertino push/pop |
+
+Component code reads shape geometry from the `TqShapes` theme extension
+(`TqShapes.of(context)`) so custom widgets follow the active kit automatically.

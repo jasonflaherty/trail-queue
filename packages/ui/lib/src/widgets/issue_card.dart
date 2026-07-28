@@ -22,22 +22,24 @@ class IssueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = TqTokens.of(context);
+    final shapes = TqShapes.of(context);
     return Semantics(
       button: onTap != null,
       child: MergeSemantics(
         child: Material(
           color: tokens.surface,
-          borderRadius: BorderRadius.circular(TqRadius.card),
+          shape: shapes.cardShape,
+          clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(TqRadius.card),
+            customBorder: shapes.cardShape,
             child: Padding(
               padding: const EdgeInsets.all(TqSpacing.md),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(TqRadius.card - 4),
+                    borderRadius: BorderRadius.circular(shapes.card - 2),
                     child: SizedBox(
                       width: 80,
                       height: 80,

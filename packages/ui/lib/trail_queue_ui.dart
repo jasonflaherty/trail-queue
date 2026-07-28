@@ -9,6 +9,7 @@ export 'src/widgets/issue_type_grid.dart';
 export 'src/widgets/photo_gallery.dart';
 export 'src/widgets/photo_uploader.dart';
 export 'src/widgets/filter_chip_row.dart';
+export 'src/widgets/glass_surface.dart';
 export 'src/widgets/app_bottom_nav.dart';
 export 'src/widgets/trail_list_tile.dart';
 export 'src/widgets/section_header.dart';
