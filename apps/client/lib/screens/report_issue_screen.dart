@@ -138,7 +138,7 @@ class _ReportIssueScreenState extends ConsumerState<ReportIssueScreen> {
             ),
           );
         }
-        context.go('/issues/${created.id}');
+        context.pushReplacement('/issues/${created.id}');
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

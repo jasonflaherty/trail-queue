@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:trail_queue_models/trail_queue_models.dart';
 import 'package:trail_queue_ui/trail_queue_ui.dart';
@@ -55,6 +56,15 @@ class IssueDetailScreen extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(issue.issueIdLabel),
+            leading: BackButton(
+              onPressed: () {
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go('/home');
+                }
+              },
+            ),
             actions: [
               IconButton(
                 onPressed: () => _shareIssue(issue),

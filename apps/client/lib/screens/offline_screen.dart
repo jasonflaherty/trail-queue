@@ -56,6 +56,115 @@ class _OfflineScreenState extends ConsumerState<OfflineScreen> {
     }
   }
 
+  Future<void> _downloadState(UsStateRegion state) async {
+    setState(() => _downloading = true);
+    try {
+      final area = await ref.read(servicesProvider).sync.downloadWorkArea(
+            label: state.label,
+            latitude: state.latitude,
+            longitude: state.longitude,
+            radiusMiles: state.radiusMiles,
+          );
+      await OfflineTileCache.instance.put(
+        'state_${state.code}',
+        '${area.centerLat},${area.centerLng},${area.radiusMiles}',
+      );
+      ref.invalidate(workAreaProvider);
+      ref.invalidate(pendingMutationsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Downloaded ${state.name}: ${area.issueCount} issues, '
+              '${area.trailCount} trails (~${state.radiusMiles.round()} mi radius)',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Download failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
+  }
+
+  Future<void> _pickStateRegion() async {
+    final selected = await showModalBottomSheet<UsStateRegion>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.7,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          builder: (context, controller) {
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                  child: Text(
+                    'Download a state region',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Caches issues, trails, and assets near the state center. '
+                    'Western trail states are listed first.',
+                    style: TextStyle(color: TqColors.slate),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: ListView.builder(
+                    controller: controller,
+                    itemCount: UsStateRegions.prioritized.length,
+                    itemBuilder: (context, index) {
+                      final state = UsStateRegions.prioritized[index];
+                      final isPriority =
+                          UsStateRegions.trailPriorityCodes.contains(state.code);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: isPriority
+                              ? TqColors.forestGreen.withValues(alpha: 0.15)
+                              : TqColors.sand,
+                          child: Text(
+                            state.code,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                              color: isPriority
+                                  ? TqColors.forestGreen
+                                  : TqColors.slate,
+                            ),
+                          ),
+                        ),
+                        title: Text(state.name),
+                        subtitle: Text(
+                          '~${state.radiusMiles.round()} mi radius around state center',
+                        ),
+                        trailing: const Icon(Icons.download_outlined),
+                        onTap: () => Navigator.pop(context, state),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    if (selected != null) await _downloadState(selected);
+  }
+
   Future<void> _sync() async {
     setState(() => _syncing = true);
     try {
@@ -143,9 +252,59 @@ class _OfflineScreenState extends ConsumerState<OfflineScreen> {
                   ),
                   const SizedBox(height: 12),
                   TqPrimaryButton(
-                    label: _downloading ? 'Downloading…' : 'Download (15 mi)',
+                    label: _downloading ? 'Downloading…' : 'Download nearby (15 mi)',
                     icon: Icons.download_outlined,
                     onPressed: _downloading ? null : _downloadWorkArea,
+                  ),
+                  const SizedBox(height: 8),
+                  TqOutlineButton(
+                    label: 'Download a state…',
+                    icon: Icons.map_outlined,
+                    onPressed: _downloading ? null : _pickStateRegion,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Popular trail states',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Quick download for common stewardship regions.',
+                    style: TextStyle(color: TqColors.slate),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: UsStateRegions.prioritized
+                        .where((s) =>
+                            UsStateRegions.trailPriorityCodes.contains(s.code))
+                        .take(8)
+                        .map(
+                          (state) => ActionChip(
+                            avatar: Text(
+                              state.code,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            label: Text(state.name),
+                            onPressed:
+                                _downloading ? null : () => _downloadState(state),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),

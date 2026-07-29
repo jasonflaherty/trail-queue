@@ -17,14 +17,24 @@ class TqOutlineButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = icon == null
-        ? Text(label)
+        ? Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          )
         : Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
             children: [
               Icon(icon, size: 20),
               const SizedBox(width: 8),
-              Text(label),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           );
     final button = OutlinedButton(onPressed: onPressed, child: child);

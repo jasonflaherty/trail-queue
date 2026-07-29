@@ -26,6 +26,8 @@ class TrailMapView extends StatefulWidget {
     this.onIssueTap,
     this.onTrailTap,
     this.onMapTap,
+    this.onLongPress,
+    this.onOverlayTap,
     this.onSearchTap,
     this.onSearchChanged,
     this.onBasemapChanged,
@@ -45,6 +47,8 @@ class TrailMapView extends StatefulWidget {
   final ValueChanged<TrailIssue>? onIssueTap;
   final ValueChanged<Trail>? onTrailTap;
   final ValueChanged<LatLng>? onMapTap;
+  final ValueChanged<LatLng>? onLongPress;
+  final ValueChanged<MapOverlayFeature>? onOverlayTap;
   final VoidCallback? onSearchTap;
   final ValueChanged<String>? onSearchChanged;
   final ValueChanged<BasemapType>? onBasemapChanged;
@@ -91,8 +95,16 @@ class _TrailMapViewState extends State<TrailMapView> {
             initialCenter: widget.center,
             initialZoom: widget.initialZoom,
             onTap: (tapPosition, point) {
+              final overlay = _overlayAt(point);
+              if (overlay != null) {
+                widget.onOverlayTap?.call(overlay);
+                return;
+              }
               widget.onMapTap?.call(point);
               widget.onPolygonPointAdded?.call(point);
+            },
+            onLongPress: (tapPosition, point) {
+              widget.onLongPress?.call(point);
             },
           ),
           children: [
@@ -104,9 +116,37 @@ class _TrailMapViewState extends State<TrailMapView> {
           ],
         ),
         _buildSearchOverlay(context),
+        _buildNorthButton(context),
         _buildFloatingControls(context),
       ],
     );
+  }
+
+  MapOverlayFeature? _overlayAt(LatLng point) {
+    // Prefer fire perimeters; last drawn / top-most wins.
+    for (final overlay in widget.overlays.reversed) {
+      if (overlay.points.length < 3) continue;
+      if (_pointInPolygon(point, overlay.points)) return overlay;
+    }
+    return null;
+  }
+
+  /// Ray-casting point-in-polygon test.
+  bool _pointInPolygon(LatLng point, List<LatLng> polygon) {
+    var inside = false;
+    for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      final pi = polygon[i];
+      final pj = polygon[j];
+      final intersect = ((pi.latitude > point.latitude) !=
+              (pj.latitude > point.latitude)) &&
+          (point.longitude <
+              (pj.longitude - pi.longitude) *
+                      (point.latitude - pi.latitude) /
+                      (pj.latitude - pi.latitude) +
+                  pi.longitude);
+      if (intersect) inside = !inside;
+    }
+    return inside;
   }
 
   Widget _buildOverlayLayer() {
@@ -119,7 +159,7 @@ class _TrailMapViewState extends State<TrailMapView> {
               color: (o.kind == OverlayKind.fire
                       ? Colors.deepOrange
                       : Colors.blue)
-                  .withValues(alpha: 0.2),
+                  .withValues(alpha: 0.25),
               borderColor: o.kind == OverlayKind.fire
                   ? Colors.deepOrange
                   : Colors.blueAccent,
@@ -237,10 +277,28 @@ class _TrailMapViewState extends State<TrailMapView> {
     );
   }
 
+  Widget _buildNorthButton(BuildContext context) {
+    return Positioned(
+      top: MediaQuery.paddingOf(context).top + 68,
+      left: 16,
+      child: _MapControlButton(
+        icon: Icons.navigation,
+        tooltip: 'North',
+        onPressed: () {
+          final camera = _mapController.camera;
+          _mapController.moveAndRotate(camera.center, camera.zoom, 0);
+        },
+      ),
+    );
+  }
+
   Widget _buildFloatingControls(BuildContext context) {
+    // Always clear the shell bottom tab bar + home indicator.
+    final bottomClearance =
+        MediaQuery.viewPaddingOf(context).bottom + kBottomNavigationBarHeight + 12;
     return Positioned(
       right: 16,
-      bottom: 24,
+      bottom: bottomClearance,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -251,18 +309,30 @@ class _TrailMapViewState extends State<TrailMapView> {
           ),
           const SizedBox(height: 8),
           _MapControlButton(
+            icon: Icons.add,
+            tooltip: 'Zoom in',
+            onPressed: () {
+              final camera = _mapController.camera;
+              _mapController.move(camera.center, camera.zoom + 1);
+            },
+          ),
+          const SizedBox(height: 8),
+          _MapControlButton(
+            icon: Icons.remove,
+            tooltip: 'Zoom out',
+            onPressed: () {
+              final camera = _mapController.camera;
+              _mapController.move(camera.center, camera.zoom - 1);
+            },
+          ),
+          const SizedBox(height: 8),
+          _MapControlButton(
             icon: Icons.my_location,
             tooltip: 'My location',
             onPressed: () {
               widget.onLocationTap?.call();
               _mapController.move(widget.center, widget.initialZoom);
             },
-          ),
-          const SizedBox(height: 8),
-          _MapControlButton(
-            icon: Icons.explore_outlined,
-            tooltip: 'Reset north',
-            onPressed: () => _mapController.rotate(0),
           ),
         ],
       ),

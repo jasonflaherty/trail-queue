@@ -8,20 +8,40 @@ class MapOverlayFeature {
     required this.kind,
     this.points = const [],
     this.severity = OverlaySeverity.info,
+    this.discoveredAt,
+    this.sizeAcres,
+    this.percentContained,
+    this.state,
   });
 
   final String id;
+
+  /// Display name (incident name for fires).
   final String label;
   final OverlayKind kind;
   final List<LatLng> points;
   final OverlaySeverity severity;
+
+  /// Fire discovery / start date (NIFC).
+  final DateTime? discoveredAt;
+
+  /// Current perimeter size in acres (NIFC).
+  final double? sizeAcres;
+
+  /// Percent contained 0–100 (NIFC).
+  final double? percentContained;
+
+  /// Point of origin state, if known.
+  final String? state;
+
+  bool get isFire => kind == OverlayKind.fire;
 }
 
 enum OverlayKind { weather, fire }
 
 enum OverlaySeverity { info, watch, warning, critical }
 
-/// Demo overlays near Mt. Hood for NOAA/NWS and InciWeb-style layers.
+/// Demo overlays near Mt. Hood used when NOAA/NIFC network fetches fail.
 class OverlayDemoData {
   OverlayDemoData._();
 
@@ -43,9 +63,13 @@ class OverlayDemoData {
   static final fires = <MapOverlayFeature>[
     MapOverlayFeature(
       id: 'fire-demo',
-      label: 'InciWeb: Demo Fire Perimeter',
+      label: 'Demo Fire',
       kind: OverlayKind.fire,
       severity: OverlaySeverity.warning,
+      discoveredAt: DateTime(2026, 7, 20),
+      sizeAcres: 1240,
+      percentContained: 35,
+      state: 'OR',
       points: const [
         LatLng(45.30, -121.80),
         LatLng(45.31, -121.78),
