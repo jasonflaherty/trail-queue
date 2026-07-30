@@ -30,7 +30,8 @@ flutter pub get
 flutter run
 ```
 
-Runs without Firebase using seeded Mt. Hood data. Offline queue still works.
+Runs without Firebase using seeded Mt. Hood data. Starts on the Login screen —
+use **Continue as Guest** or any OAuth button (stubbed in demo). Offline queue still works.
 
 ## Firebase
 

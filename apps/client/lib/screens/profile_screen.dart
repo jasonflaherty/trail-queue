@@ -15,8 +15,27 @@ class ProfileScreen extends ConsumerWidget {
     final orgsAsync = ref.watch(organizationsProvider);
 
     if (user == null) {
-      return const Scaffold(
-        body: EmptyState(title: 'Not signed in'),
+      return Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const EmptyState(
+                  title: 'Not signed in',
+                  message: 'Sign in to save your queue, join crews, and report issues.',
+                ),
+                const SizedBox(height: 16),
+                TqPrimaryButton(
+                  label: 'Sign in',
+                  icon: Icons.login,
+                  onPressed: () => context.go('/login'),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
     }
 
@@ -191,6 +210,15 @@ class ProfileScreen extends ConsumerWidget {
             label: 'Settings',
             icon: Icons.settings_outlined,
             onPressed: () => context.push('/settings'),
+          ),
+          const SizedBox(height: 12),
+          TqOutlineButton(
+            label: 'Switch account',
+            icon: Icons.login,
+            onPressed: () async {
+              await ref.read(servicesProvider).auth.signOut();
+              if (context.mounted) context.go('/login');
+            },
           ),
         ],
       ),

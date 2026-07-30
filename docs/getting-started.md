@@ -16,7 +16,9 @@ flutter pub get
 flutter run
 ```
 
-You will land on Home signed in as **Alex** (demo). Use Profile → Settings → Sign out to reach Login and try email / Google / Apple / Facebook / Microsoft / anonymous flows (stubbed in demo mode).
+You will land on the **Login** screen. Choose Google, Apple, Facebook, Microsoft, email, or **Continue as Guest** to explore with Mt. Hood demo data.
+
+To change accounts later: **Profile → Switch account** (or Settings → Sign Out).
 
 ## Design
 

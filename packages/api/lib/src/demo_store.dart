@@ -26,7 +26,7 @@ class DemoStore {
       .toList(growable: true);
   final List<ImportJob> importJobs = <ImportJob>[];
 
-  UserProfile? currentUser = DemoData.currentUser;
+  UserProfile? currentUser;
 
   int _issueCounter = 5000;
 
