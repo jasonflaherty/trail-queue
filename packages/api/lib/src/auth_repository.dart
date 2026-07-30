@@ -131,6 +131,57 @@ class AuthRepository {
     return profile;
   }
 
+  Future<UserProfile> signInFacebook() async {
+    if (!isConfigured) {
+      final profile = DemoData.currentUser.copyWith(
+        displayName: 'Facebook User',
+        email: 'facebook@trailqueue.dev',
+        roles: const [UserRole.volunteer],
+        hasCompletedOnboarding: false,
+      );
+      DemoStore.instance.currentUser = profile;
+      _authController.add(profile);
+      return profile;
+    }
+
+    final provider = FacebookAuthProvider();
+    provider.addScope('email');
+    provider.addScope('public_profile');
+    final cred = await _auth!.signInWithProvider(provider);
+    final profile = await _ensureProfile(
+      cred.user!,
+      hasCompletedOnboarding: false,
+    );
+    _authController.add(profile);
+    return profile;
+  }
+
+  Future<UserProfile> signInMicrosoft() async {
+    if (!isConfigured) {
+      final profile = DemoData.currentUser.copyWith(
+        displayName: 'Microsoft User',
+        email: 'microsoft@trailqueue.dev',
+        roles: const [UserRole.volunteer],
+        hasCompletedOnboarding: false,
+      );
+      DemoStore.instance.currentUser = profile;
+      _authController.add(profile);
+      return profile;
+    }
+
+    final provider = MicrosoftAuthProvider();
+    provider.addScope('email');
+    provider.addScope('openid');
+    provider.addScope('profile');
+    final cred = await _auth!.signInWithProvider(provider);
+    final profile = await _ensureProfile(
+      cred.user!,
+      hasCompletedOnboarding: false,
+    );
+    _authController.add(profile);
+    return profile;
+  }
+
   Future<UserProfile> signInAnonymously() async {
     if (!isConfigured) {
       final profile = UserProfile(

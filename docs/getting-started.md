@@ -16,7 +16,7 @@ flutter pub get
 flutter run
 ```
 
-You will land on Home signed in as **Alex** (demo). Use Profile → Sign out to reach Login and try email / Google / Apple / anonymous flows (stubbed in demo mode).
+You will land on Home signed in as **Alex** (demo). Use Profile → Settings → Sign out to reach Login and try email / Google / Apple / Facebook / Microsoft / anonymous flows (stubbed in demo mode).
 
 ## Design
 

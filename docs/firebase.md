@@ -11,7 +11,13 @@ No Firebase project required. Data lives in Hive + in-memory demo seed and still
 
 ## Enable Firebase
 
-1. Create a Firebase project and enable **Authentication** (Email, Google, Apple, Anonymous) and **Cloud Firestore**.
+1. Create a Firebase project and enable **Authentication** providers:
+   - Email/Password
+   - Google
+   - Apple (required on iOS App Store builds)
+   - Facebook (create an app at [developers.facebook.com](https://developers.facebook.com), then paste App ID + App Secret into Firebase)
+   - Microsoft (register an app in [Azure Entra ID](https://portal.azure.com), then paste Application/Client ID + secret into Firebase)
+   - Anonymous
 2. From `apps/client`:
 
 ```bash

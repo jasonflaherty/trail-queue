@@ -130,30 +130,69 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Divider(),
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'or continue with',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: TqColors.slate,
+                          ),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
               const SizedBox(height: 16),
               TqOutlineButton(
-                label: 'Continue with Google',
+                label: 'Google',
                 icon: Icons.g_mobiledata,
                 onPressed: _loading
                     ? null
                     : () => _signIn(auth.signInGoogle),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               TqOutlineButton(
-                label: 'Continue with Apple',
+                label: 'Apple',
                 icon: Icons.apple,
                 onPressed: _loading
                     ? null
                     : () => _signIn(auth.signInApple),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
+              TqOutlineButton(
+                label: 'Facebook',
+                icon: Icons.facebook,
+                onPressed: _loading
+                    ? null
+                    : () => _signIn(auth.signInFacebook),
+              ),
+              const SizedBox(height: 10),
+              TqOutlineButton(
+                label: 'Microsoft',
+                icon: Icons.window_outlined,
+                onPressed: _loading
+                    ? null
+                    : () => _signIn(auth.signInMicrosoft),
+              ),
+              const SizedBox(height: 16),
               TqOutlineButton(
                 label: 'Continue as Guest',
                 icon: Icons.person_outline,
                 onPressed: _loading
                     ? null
                     : () => _signIn(auth.signInAnonymously),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'OAuth providers work in demo mode as stubs. '
+                'With Firebase enabled, turn them on in Authentication → Sign-in method.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: TqColors.slate,
+                    ),
               ),
             ],
           ),
